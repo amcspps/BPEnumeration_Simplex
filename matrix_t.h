@@ -19,6 +19,7 @@ struct Matrix {
 
     ~Matrix() {}
     Matrix(const Matrix& M);
+    void addData(int data, int i, int j);
     Matrix(const Matrix& M, std::set<int> Cols);
     Matrix(int h, int w);
     // column-major ordering

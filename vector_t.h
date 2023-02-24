@@ -4,6 +4,7 @@
 
 struct vector_t : public Matrix {
     vector_t(int h) : Matrix(h, 1) {};
+    inline void addData(int data, int i) { Matrix::addData(data, i, 0);};
     vector_t(Matrix& mat) : Matrix(mat) {
         rows *= cols;
         cols = 1;

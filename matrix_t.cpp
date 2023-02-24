@@ -4,7 +4,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-
+void Matrix::addData(int data, int i, int j) {
+    _data[i + j * rows] = data;
+}
 Matrix::Matrix(const Matrix& M) {
     rows = M.rows;
     cols = M.cols;
@@ -13,6 +15,7 @@ Matrix::Matrix(const Matrix& M) {
 Matrix::Matrix(int h, int w) : _data(h* w, 0) {
     rows = h;
     cols = w;
+
     // _data = std::vector<double>(h * w);
 }
 auto Matrix::colSpan(int index) const {
