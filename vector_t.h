@@ -2,9 +2,9 @@
 #define VECTOR_H_
 #include "matrix_t.h"
 
-struct vector_t : public matrix_t {
-    vector_t(int h) : matrix_t(h, 1) {};
-    vector_t(matrix_t& mat) : matrix_t(mat) {
+struct vector_t : public Matrix {
+    vector_t(int h) : Matrix(h, 1) {};
+    vector_t(Matrix& mat) : Matrix(mat) {
         rows *= cols;
         cols = 1;
     };
