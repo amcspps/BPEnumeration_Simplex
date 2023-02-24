@@ -1,7 +1,5 @@
-﻿// BPEnumeration_Simplex.cpp: определяет точку входа для приложения.
-//
-
-#include <iostream>
+﻿#include <iostream>
+#include "matrix_t.h"
 using namespace std;
 
 int main()

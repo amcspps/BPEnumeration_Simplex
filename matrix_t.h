@@ -37,7 +37,7 @@ struct matrix_t {
         fstr.write(reinterpret_cast<const char*>(_data.data()), _data.size() * sizeof(double));
     }
 
-private:
+protected:
     std::vector<double> _data;
 };
 
