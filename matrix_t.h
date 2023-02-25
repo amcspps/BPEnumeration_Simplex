@@ -17,7 +17,7 @@ struct Matrix {
     int rows;
     int cols;
 
-    ~Matrix() {}
+    ~Matrix() {};
     Matrix(const Matrix& M);
     void addData(int data, int i, int j);
     Matrix(const Matrix& M, std::set<int> Cols);
