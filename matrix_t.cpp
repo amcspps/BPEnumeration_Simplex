@@ -12,7 +12,7 @@ Matrix::Matrix(const Matrix& M) {
     cols = M.cols;
     _data = M._data;
 }
-Matrix::Matrix(int h, int w) : _data(h* w, 0) {
+Matrix::Matrix(int h, int w) : _data(h*w, 0) {
     rows = h;
     cols = w;
 

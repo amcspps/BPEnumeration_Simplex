@@ -1,19 +1,15 @@
 #pragma once
-#include "matrix_t.h"
 #include "vector_t.h"
-class Task {
+
+
+class Task /*notice that task might be a problem in a straight or dual forms. */ {
 public:
-	Task(Matrix A, vector_t B, vector_t C);
-	void format_data();
-	void rotations_method();
+	Task(Matrix& A, vector_t& B, vector_t& C) : _A(A), _B(B), _C(C), _sol(0) {};
 	void boundary_point_enumeration();
 	void simplex_method();
-	/*antother functions to process data if needed*/
-	void print();
 private:
-	Matrix _A;
-	vector_t _B;
-	vector_t _C;
-	
-
+	vector_t _C;//object function
+	Matrix _A;//constraints matrix 
+	vector_t _B;//rhs column
+	vector_t _sol;//solution
 };

@@ -17,7 +17,7 @@ struct Matrix {
     int rows;
     int cols;
 
-    ~Matrix() {}
+    ~Matrix() {};
     Matrix(const Matrix& M);
     void addData(int data, int i, int j);
     Matrix(const Matrix& M, std::set<int> Cols);
@@ -46,7 +46,6 @@ struct Matrix {
     auto end() { return _data.end(); }
 
     size_t size() { return _data.size(); }
-
 protected:
     std::vector<double> _data;
     auto colSpan(int index) const;
