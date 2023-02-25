@@ -7,6 +7,13 @@
 void Matrix::addData(int data, int i, int j) {
     _data[i + j * rows] = data;
 }
+void Matrix::deleteEl(int _j) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = _j; j < cols - 1; j++) {
+            addData(el(i, j + 1), i, j);
+        }
+    }
+}
 Matrix::Matrix(const Matrix& M) {
     rows = M.rows;
     cols = M.cols;
@@ -15,7 +22,6 @@ Matrix::Matrix(const Matrix& M) {
 Matrix::Matrix(int h, int w) : _data(h* w, 0) {
     rows = h;
     cols = w;
-
     // _data = std::vector<double>(h * w);
 }
 auto Matrix::colSpan(int index) const {

@@ -46,7 +46,7 @@ struct Matrix {
     auto end() { return _data.end(); }
 
     size_t size() { return _data.size(); }
-
+    void deleteEl(int _j);
 protected:
     std::vector<double> _data;
     auto colSpan(int index) const;

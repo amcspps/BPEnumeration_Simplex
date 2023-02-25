@@ -3,11 +3,13 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "matrix_t.h"
+#include "TaskLoader.h"
 using namespace std;
 
 int main()
 {
+	TaskLoader dad;
+	dad.load("task.txt");
 	cout << "Hello CMake." << endl;
 	return 0;
 }
