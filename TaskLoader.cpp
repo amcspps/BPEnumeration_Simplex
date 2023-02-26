@@ -1,37 +1,38 @@
 #include "TaskLoader.h"
-#include<iomanip>
 
-void TaskLoader::load(std::string filename) {
+std::tuple<task_t, std::vector<int>, std::vector<int>> TaskLoader::load(std::string filename) {
     std::ifstream file(filename);
-    std::string line;
+    std::string str;
     std::vector<std::vector<std::string>> linearSystem;
     std::vector<int> conditions;
     std::vector<double> F;
 
     //read data from the file
-    int inequalities = 0;
-    int equalities = 0;
     bool nextIter = false;
     int state = 0;
-    while (std::getline(file, line)) {
-        std::vector<std::string> result;
-        std::istringstream iss(line);
 
-        for (std::string s; iss >> s; )
+    int M = 0;
+    int N = 0;
+    std::getline(file, str);
+    std::istringstream iss(str);
+    iss >> M;
+    iss >> N;
+
+    while (std::getline(file, str)) {
+        std::vector<std::string> result;
+        std::istringstream iss(str);
+
+        for (std::string s; iss >> s; ) {
             result.push_back(s);
+        }
 
         if (state == 0) {
             for (int i = 0; i < result.size(); i++)
                 if (result[i] == ">=" || result[i] == "<=" || result[i] == "==") {
-                    if (result[i] == "==")
-                        equalities++;
-                    else
-                        inequalities++;
                     linearSystem.push_back(result);
                     nextIter = true;
                     break;
                 }
-
             if (nextIter) {
                 nextIter = false;
                 continue;
@@ -50,133 +51,138 @@ void TaskLoader::load(std::string filename) {
         state++;
     }
 
-    int N = F.size() * 3;
+    Matrix A{ N, M };
+    vector_t b{ M };
+    std::vector<int> inequality;
+    int i = 0;
 
-    Matrix A1{ inequalities, N }, A2{ equalities, N };
-    vector_t b1{ inequalities }, b2{ equalities };
-
-    int A1Index = 0, A2Index = 0;
     for (auto& line : linearSystem) {
         if (line[line.size() - 2] == ">=") {
-            // we must change sign, so multiply everything by -1
-            for (int i = 0; i < line.size() - 2; i++) {
-                A1.addData(std::stod(line[i]) * (-1), A1Index, i);
-                std::cout << A1.el(A1Index, i) << " ";
-            }
-            std::cout << "<= ";
-            b1.addData((-1) * std::stod(line[line.size() - 1]), A1Index++);
-            std::cout << b1.el(A1Index - 1, 0) << std::endl;
+            for (int j = 0; j < line.size() - 2; j++)
+                A.addData(std::stod(line[j]) * (-1), i, j);
+            inequality.push_back(i);
+            b.addData((-1) * std::stod(line[line.size() - 1]), i++);
+
         }
-        if (line[line.size() - 2] == "<=") {
-            for (int i = 0; i < line.size() - 2; i++) {
-                A1.addData(std::stod(line[i]), A1Index, i);
-                std::cout << A1.el(A1Index, i) << " ";
-            }
-            std::cout << "<= ";
-            b1.addData(std::stod(line[line.size() - 1]), A1Index++);
-            std::cout << b1.el(A1Index - 1, 0) << std::endl;
+        else if (line[line.size() - 2] == "<=") {
+            for (int j = 0; j < line.size() - 2; j++)
+                A.addData(std::stod(line[j]), i, j);
+            inequality.push_back(i);
+            b.addData(std::stod(line[line.size() - 1]), i++);
         }
-        if (line[line.size() - 2] == "==") {
-            for (int i = 0; i < line.size() - 2; i++) {
-                A2.addData(std::stod(line[i]), A2Index, i);
-                std::cout << A2.el(A2Index, i) << " ";
-            }
-            std::cout << "== ";
-            b2.addData(std::stod(line[line.size() - 1]), A2Index++);
-            std::cout << b2.el(A2Index - 1, 0) << std::endl;
+        else if (line[line.size() - 2] == "==") {
+            for (int j = 0; j < line.size() - 2; j++)
+                A.addData(std::stod(line[j]), i, j);
+            b.addData(std::stod(line[line.size() - 1]), i++);
         }
     }
 
-    int NumberOfLastCoef = F.size();
 
-    //add coef where x>=0 => x = x' - x"
+    vector_t f{ (int)F.size() };
+    for (int i = 0; i < F.size(); i++)
+        f.addData(F[i], i);
+
+    return { { A,b,f } , conditions , inequality };
+}
+
+task_t TaskLoader::makeCanon(task_t M, std::vector<int> conditions, std::vector<int> inequality) {
+    Matrix A(M.A.rows, 3 * M.A.cols /*+ inequality.size() - conditions.size()*/);
+    std::copy(M.A.begin(), M.A.end(), A.begin());
+    vector_t F = M.F;
+    vector_t b = M.b;
+
+    int NumberOfLastCoef = M.A.cols;
+
+    //where a <= b => a + x = b
+    for (int i : inequality) {
+        A(i, NumberOfLastCoef++) = 1;
+        F.push_back(0);
+    }
+
+    // if b_i < 0 =>   .. * (-1)
+    for (int i = 0; i < A.rows; i++)
+        if (b[i] < 0) {
+            for (int j = 0; j < NumberOfLastCoef; j++)
+                A(i, j) = A(i, j) * (-1);
+            b[i] = b[i] * (-1);
+        }
+
+    //x_i = x_i' - x_lastCoef
     std::vector<int> dop;
-    for (int i = 0; i < F.size(); i++) {
+    for (int i = 0; i < M.A.cols; i++) {
         if (std::find(conditions.begin(), conditions.end(), i) == conditions.end())
             dop.push_back(1);
         else
             dop.push_back(0);
     }
-    for (int j = 0; j < F.size(); j++) {
+    int size = M.A.cols;
+    for (int j = 0; j < size; j++) {
         if (dop[j] == 1) {
-            for (int i = 0; i < inequalities; i++)
-                A1.addData(A1.el(i, j), i, NumberOfLastCoef);
-            for (int i = 0; i < equalities; i++)
-                A2.addData(A2.el(i, j), i, NumberOfLastCoef);
+            dop.insert(dop.begin() + j, 0);
+            j++;
+            size++;
+            for (int i = 0; i < M.A.rows; i++) {
+                for (int k = A.cols - 1; k > j; k--) {
+                    A.addData(A.el(i, k - 1), i, k);
+                }
+                A.addData(-A.el(i, j - 1), i, j);
+            }
+            F.insertEl(j, -F[j - 1]);
             NumberOfLastCoef++;
 
-            for (int i = 0; i < inequalities; i++)
-                A1.addData(-A1.el(i, j), i, NumberOfLastCoef);
-            for (int i = 0; i < equalities; i++)
-                A2.addData(-A2.el(i, j), i, NumberOfLastCoef);
-            NumberOfLastCoef++;
-
-            for (int i = 0; i < inequalities; i++)
-                A1.addData(0, i, j);
-            for (int i = 0; i < equalities; i++)
-                A2.addData(0, i, j);
         }
     }
-
-    //remove the extra columns, where all zeros
+    //delete zero column
+   
     for (int j = 0; j < NumberOfLastCoef; j++) {
         int flag = 0;
-        for (int i = 0; i < inequalities; i++)
-            if (A1.el(i, j) == 0)
+        for (int i = 0; i < A.rows; i++)
+            if (A.el(i, j) == 0)
                 flag += 1;
 
-        for (int i = 0; i < equalities; i++)
-            if (A2.el(i, j) == 0)
-                flag += 1;
+        if (F.el(j, 0) == 0)
+            flag += 1;
 
-        if (flag == inequalities + equalities) {
-            A1.deleteEl(j);
-            A2.deleteEl(j);
+        if (flag == A.rows + 1) {
+            A.deleteEl(j);;
+            F.deleteEl(j);
             NumberOfLastCoef--;
             j--;
         }
     }
-    // from <= to =
-    for (int i = 0; i < inequalities; i++) {
-        A1.addData(1, i, NumberOfLastCoef);
-        NumberOfLastCoef++;
+    A.cols = NumberOfLastCoef;
+
+    return { A, b,F };
+}
+
+task_t TaskLoader::makeDual(task_t M, std::vector<int> conditions, std::vector<int> inequality) {
+    Matrix A(M.A.T());
+    vector_t b = M.F;
+    vector_t F = M.b;
+
+
+    //because x_i >=0 and A^Ty >= F_i => make A^Ty <= F_i 
+    for (int i : conditions) {
+        for (int j = 0; j < A.cols; j++)
+            A(i, j) = A(i, j) * (-1);
+        b[i] = b[i] * (-1);
     }
 
-    // if b[i]< 0 do that b[i] > 0 
-    {
+    return makeCanon({ A,b,F }, inequality, conditions);
+}
 
-        for (int i = 0; i < inequalities; i++) {
-            if (b1.el(i, 0) < 0) {
-                for (int j = 0; j < NumberOfLastCoef; j++) {
-                    A1.addData(A1.el(i, j) * (-1), i, j);
-                }
-                b1.addData((-1) * b1.el(i, 0), i);
-            }
-        }
-        for (int i = 0; i < equalities; i++) {
-            if (b2.el(i, 0) < 0) {
-                for (int j = 0; j < NumberOfLastCoef; j++) {
-                    A2.addData(A2.el(i, j) * (-1), i, j);
-                }
-                b2.addData((-1) * b2.el(i, 0), i);
-            }
-        }
-    }
-
+void TaskLoader::printTask(task_t M) {
     std::cout << std::endl;
-    for (int i = 0; i < inequalities; i++) {
-        for (int j = 0; j < NumberOfLastCoef; j++) {
-            std::cout << std::setw(2) << A1.el(i, j) << " ";
+    for (int i = 0; i < M.A.rows; i++) {
+        for (int j = 0; j < M.A.cols; j++) {
+            std::cout << std::setw(2) << M.A.el(i, j) << " ";
         }
         std::cout << "= ";
-        std::cout << std::setw(2) << b1.el(i, 0) << std::endl;
+        std::cout << std::setw(2) << M.b.el(i, 0) << std::endl;
     }
-    for (int i = 0; i < equalities; i++) {
-        for (int j = 0; j < NumberOfLastCoef; j++) {
-            std::cout << std::setw(2) << A2.el(i, j) << " ";
-        }
-        std::cout << "= ";
-        std::cout << std::setw(2) << b2.el(i, 0) << std::endl;
+    for (int i = 0; i < M.A.cols; i++) {
+        std::cout << std::setw(2) << M.F.el(i, 0) << " ";
     }
+    std::cout << std::endl;
 
 }

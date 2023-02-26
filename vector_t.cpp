@@ -16,4 +16,10 @@ double vector_t::eqNorm() const {
     return res;
 }
 
+void vector_t::deleteEl(int _j) {
+    for (int j = _j; j < rows - 1; j++)
+        addData(el(j + 1, 0), j);
+}
+
+
 double norm(const vector_t& v) { return v.eqNorm(); }

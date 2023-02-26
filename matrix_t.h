@@ -1,6 +1,6 @@
 #ifndef MATRIX_H_
 #define MATRIX_H_
-
+#pragma once
 #include <cmath>
 #include <fstream>
 #include <iostream>
@@ -19,7 +19,6 @@ struct Matrix {
 
     ~Matrix() {};
     Matrix(const Matrix& M);
-    void addData(int data, int i, int j);
     Matrix(const Matrix& M, std::set<int> Cols);
     Matrix(int h, int w);
     // column-major ordering
@@ -46,7 +45,9 @@ struct Matrix {
     auto end() { return _data.end(); }
 
     size_t size() { return _data.size(); }
+
     void deleteEl(int _j);
+    void addData(int data, int i, int j);
 protected:
     std::vector<double> _data;
     auto colSpan(int index) const;

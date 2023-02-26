@@ -4,16 +4,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-void Matrix::addData(int data, int i, int j) {
-    _data[i + j * rows] = data;
-}
-void Matrix::deleteEl(int _j) {
-    for (int i = 0; i < rows; i++) {
-        for (int j = _j; j < cols - 1; j++) {
-            addData(el(i, j + 1), i, j);
-        }
-    }
-}
 Matrix::Matrix(const Matrix& M) {
     rows = M.rows;
     cols = M.cols;
@@ -151,6 +141,17 @@ std::ostream& operator<<(std::ostream& os, const Matrix& M) {
         os << std::endl;
     }
     return os;
+}
+
+void Matrix::addData(int data, int i, int j) {
+    _data[i + j * rows] = data;
+}
+void Matrix::deleteEl(int _j) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = _j; j < cols - 1; j++) {
+            addData(el(i, j + 1), i, j);
+        }
+    }
 }
 
 double mat::random(double a, double b) { return a + (double)rand() * (b - a) / RAND_MAX; }

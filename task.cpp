@@ -4,8 +4,6 @@
 
 using namespace std;
 
-
-
 void Task::boundary_point_enumeration() {
 	vector <double> obj_fun_values;
 	set<int> column_set;
