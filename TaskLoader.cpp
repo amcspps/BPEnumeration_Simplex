@@ -156,6 +156,19 @@ task_t TaskLoader::makeCanon(task_t M, std::vector<int> conditions, std::vector<
 }
 
 task_t TaskLoader::makeDual(task_t M, std::vector<int> conditions, std::vector<int> inequality) {
+    std::cout << std::endl;
+    for (int i = 0; i < M.A.rows; i++) {
+        for (int j = 0; j < M.A.cols; j++) {
+            std::cout << std::setw(2) << M.A.el(i, j) << " ";
+        }
+        std::cout << "= ";
+        std::cout << std::setw(2) << M.b.el(i, 0) << std::endl;
+    }
+    for (int i = 0; i < M.A.cols; i++) {
+        std::cout << std::setw(2) << M.F.el(i, 0) << " ";
+    }
+    std::cout << std::endl;
+    
     Matrix A(M.A.T());
     vector_t b = M.F;
     vector_t F = M.b;
@@ -167,6 +180,19 @@ task_t TaskLoader::makeDual(task_t M, std::vector<int> conditions, std::vector<i
             A(i, j) = A(i, j) * (-1);
         b[i] = b[i] * (-1);
     }
+
+    std::cout << std::endl;
+    for (int i = 0; i < A.rows; i++) {
+        for (int j = 0; j < A.cols; j++) {
+            std::cout << std::setw(2) << A.el(i, j) << " ";
+        }
+        std::cout << "= ";
+        std::cout << std::setw(2) << b.el(i, 0) << std::endl;
+    }
+    for (int i = 0; i < A.cols; i++) {
+        std::cout << std::setw(2) << F.el(i, 0) << " ";
+    }
+    std::cout << std::endl;
 
     return makeCanon({ A,b,F }, inequality, conditions);
 }
