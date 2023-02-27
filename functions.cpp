@@ -1,10 +1,28 @@
 #include "functions.h"
 #include <algorithm>
+#include <tuple>
 
 using namespace std;
 
 
-Matrix rotate_upper_triangle(Matrix A) {
+
+vector <double> gaussian_reverse(Matrix A, vector_t B) {
+	vector<double> X(B.size());
+	//fill(X.begin(), X.end(), 0);
+	for (int i = A.cols - 1; i >= 0; i--) {
+		double beta = B[i];
+		for (int j = A.cols - 1; j > i; j--) {
+			beta -= A(i, j) * X[j];
+		}
+		X[i] = beta / A(i, i);
+		if (fabs(X[i]) < 1e-6) {
+			X[i] = 0;
+		}
+	}
+	return X;
+};
+
+vector <double> solve(Matrix A, vector_t B) {
 	double C, S;
 	for (int i = 0; i < A.cols - 1; i++) {
 		for (int m = i + 1; m < A.cols; m++) {
@@ -16,37 +34,34 @@ Matrix rotate_upper_triangle(Matrix A) {
 				A(i, k) = A1;
 				A(m, k) = A2;
 			}
+			double B1 = C * B[i] + S * B[m];
+			double B2 = C * B[m] - S * B[i];
+			B[i] = B1;
+			B[m] = B2;
 		}
 	}
-	return A;
-}
 
-vector <double> gaussian_reverse(Matrix A, vector_t B) {
-	vector<double> X(B.size());
-	for (int i = A.cols - 1; i >= 0; i--) {
-		double beta = B[i];
-		for (int j = A.cols - 1; j > i; j--)
-			beta -= A(i, j) * X[j];
-		X[i] = beta / A(i, i);
+	if (determinant_upper_triangle(A) != 0){
+		return gaussian_reverse(A, B);
 	}
-
-	return X;
-};
-vector <double> solve(Matrix A, vector_t B) {
-	Matrix A_rt = rotate_upper_triangle(A);
-	return gaussian_reverse(A_rt, B);
+	else {
+		return { BAD_DETERMINANT };
+	}
+	
 };
 
-double determinant(Matrix A, vector_t B) {
+double determinant_upper_triangle(Matrix A) {
 	double det = 1;
 	if (A.rows != A.cols) {
 		throw std::invalid_argument("matrix is not square");
 	}
-	Matrix rt = rotate_upper_triangle(A);
 	for (int i = 0; i < A.cols; i++) {
 		det *= A(i, i);
 	}
-	return det;
+	if (fabs(det) < 1e-6) {
+		return det;
+	}
+	
 }
 
 
@@ -54,7 +69,7 @@ double evaluate(vector_t obj_function, vector<double> solution, set<int> variabl
     double result_value = 0;
     reverse(solution.begin(), solution.end());
     for (auto index : variable_indices) {
-		result_value += obj_function[index] * (*solution.end());
+ 		result_value += obj_function[index] * (solution.back());
 		solution.pop_back();
     }
 	return result_value;
@@ -64,7 +79,7 @@ vector<set<int>> generate_combinations(set<int> column_set, int k) {
 	vector<set<int>> combinations;
 	vector<int> current_permutation(column_set.begin(), column_set.end());
 	do {
-		set<int> combination(current_permutation.begin(), current_permutation.end() + k);
+		set<int> combination(current_permutation.begin(), current_permutation.begin() + k);
 		if (auto it = find(combinations.begin(), combinations.end(), combination) == combinations.end()) {
 			combinations.push_back(combination);
 		}

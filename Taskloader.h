@@ -1,7 +1,4 @@
-#ifndef TASK_H_
-#define TASK_H_
 #pragma once
-#include<iomanip>
 #include <iostream>
 #include <string>
 #include <fstream>

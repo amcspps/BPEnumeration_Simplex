@@ -18,6 +18,7 @@ struct Matrix {
     int cols;
 
     ~Matrix() {};
+    Matrix(std::vector<double> data, int r, int c) { _data = data; rows = r; cols = c; };
     Matrix(const Matrix& M);
     Matrix(const Matrix& M, std::set<int> Cols);
     Matrix(int h, int w);
