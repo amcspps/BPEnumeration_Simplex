@@ -23,5 +23,6 @@ public:
     task_t makeCanon(task_t M, std::vector<int> conditions, std::vector<int> inequality);
     task_t makeDual(task_t M, std::vector<int> conditions, std::vector<int> inequality);
     static void printTask(task_t M);
+    std::vector<std::vector<double>> forSimplecs(task_t M);
 };
 #endif //TASK_H_

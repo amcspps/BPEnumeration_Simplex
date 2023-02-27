@@ -6,10 +6,17 @@ int main()
 {
 	TaskLoader mom;
 	auto [task, cond, ineq] = mom.load("C:\\more\\University\\cpp\\BPE\\task.txt");
-	std::cout << "canon:" << std::endl << std::endl;
-	TaskLoader::printTask(mom.makeCanon(task, cond, ineq));
+
+	std::cout << "canon:";
+	task_t canon = mom.makeCanon(task, cond, ineq);
+	TaskLoader::printTask(canon);
+	std::cout << std::endl;
+	mom.forSimplecs(canon);
+
 	std::cout << "dual:" << std::endl;
-	TaskLoader::printTask(mom.makeDual(task, cond, ineq));
-	cout << "Hello CMake." << endl;
+	task_t dual = mom.makeDual(task, cond, ineq);
+	TaskLoader::printTask(dual);
+	std::cout << std::endl;
+	mom.forSimplecs(dual);
 	return 0;
 }
