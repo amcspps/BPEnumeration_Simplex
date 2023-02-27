@@ -26,9 +26,9 @@ void Task::boundary_point_enumeration() {
 			cout << "---------------------------------------------------------" << endl;
 		}
 	}
-	auto val = *(max_element(obj_fun_values.begin(), obj_fun_values.end()));
+	auto val = *(min_element(obj_fun_values.begin(), obj_fun_values.end()));
 	auto index = find_index(obj_fun_values, val);
-	cout << "the maximum of objective function is: " << val<< "\t"<< "variables are:" << solution_variables_indices[index]<< "=" << boundary_points[index] << ", other x_i = 0"  << endl;
+	cout << "the min of objective function is: " << val<< "\t"<< "variables are:" << solution_variables_indices[index]<< "=" << boundary_points[index] << ", other x_i = 0"  << endl;
 };
 
 

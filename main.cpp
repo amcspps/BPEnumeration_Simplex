@@ -14,15 +14,17 @@ int main()
 	TaskLoader mom;
 	auto [task, cond, ineq] = mom.load("C:\\Users\\kachok na masse\\source\\repos\\BPEnumeration_Simplex\\task.txt");
 
-	std::cout << "canon: -----------------------------------------------------";
+	std::cout << "canon: -----------------------------------------------------" << endl;
 	task_t canon = mom.makeCanon(task, cond, ineq);
 	Task ct = Task(canon.A, canon.b, canon.F);
-	ct.boundary_point_enumeration();
+
+	//ct.boundary_point_enumeration();
 	mom.forSimplecs(canon);
 
 	std::cout << "dual: -----------------------------------------------------" << std::endl;
 	task_t dual = mom.makeDual(task, cond, ineq);
-	Task dt = Task(canon.A, canon.b, canon.F);
+	Task dt = Task(dual.A, dual.b, dual.F);
+	dt.boundary_point_enumeration();
 	mom.forSimplecs(dual);
 	return 0;
 }
