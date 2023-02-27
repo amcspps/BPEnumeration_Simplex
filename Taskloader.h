@@ -1,4 +1,5 @@
 #pragma once
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -22,4 +23,3 @@ public:
     static void printTask(task_t M);
     std::vector<std::vector<double>> forSimplecs(task_t M);
 };
-#endif //TASK_H_

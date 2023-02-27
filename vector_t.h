@@ -5,8 +5,7 @@
 
 struct vector_t : public Matrix {
     vector_t(int h) : Matrix(h, 1) {};
-    vector_t(std::vector<double> data, int w) : Matrix(data, w, 1) {};
-    inline void addData(int data, int i) { Matrix::addData(data, i, 0);};
+    vector_t(std::vector<double> data, int cols) : Matrix(data, 1, cols) {};
     vector_t(Matrix& mat) : Matrix(mat) {
         rows *= cols;
         cols = 1;
@@ -27,7 +26,7 @@ struct vector_t : public Matrix {
     }
     double eqNorm() const;
 
-    inline void addData(int data, int i) { Matrix::addData(data, i, 0); };
+    //inline void addData(int data, int i) { Matrix::addData(data, i, 0); };
     void deleteEl(int _j);
     void insertEl(int _j, int data) { _data.insert(_data.begin() + _j, data); };
 };

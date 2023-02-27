@@ -27,10 +27,21 @@ vector <double> solve(Matrix A, vector_t B) {
 	for (int i = 0; i < A.cols - 1; i++) {
 		for (int m = i + 1; m < A.cols; m++) {
 			C = A(i, i) / sqrt(A(i, i) * A(i, i) + A(m, i) * A(m, i));
+			
 			S = A(m, i) / sqrt(A(i, i) * A(i, i) + A(m, i) * A(m, i));
+			if (isnan(C) || (isnan(S))) {
+				return vector<double> { BAD_DETERMINANT };
+			}
 			for (int k = i; k < A.cols; k++) {
 				double A1 = C * A(i, k) + S * A(m, k);
 				double A2 = C * A(m, k) - S * A(i, k);
+				/*if (fabs(A1) < 1e-6) {
+					A1 = 0;
+				}
+				if (fabs(A2) < 1e-6) {
+					A2 = 0;
+
+				}*/
 				A(i, k) = A1;
 				A(m, k) = A2;
 			}
@@ -56,6 +67,7 @@ double determinant_upper_triangle(Matrix A) {
 		throw std::invalid_argument("matrix is not square");
 	}
 	for (int i = 0; i < A.cols; i++) {
+		if (fabs(A(i, i)) < 1e-6) { return det = 0; };
 		det *= A(i, i);
 	}
 	if (fabs(det) < 1e-6) {
@@ -75,15 +87,34 @@ double evaluate(vector_t obj_function, vector<double> solution, set<int> variabl
 	return result_value;
 }
 
-vector<set<int>> generate_combinations(set<int> column_set, int k) {
-	vector<set<int>> combinations;
+vector<set<int>> generate_combinations(vector<int> column_set, int k) {
+	vector<int> combination;
+	vector <set<int>> combinations;
+
+	go(column_set, combination, combinations, 0, k);
+
+	/*vector<set<int>> combinations;
 	vector<int> current_permutation(column_set.begin(), column_set.end());
 	do {
 		set<int> combination(current_permutation.begin(), current_permutation.begin() + k);
 		if (auto it = find(combinations.begin(), combinations.end(), combination) == combinations.end()) {
 			combinations.push_back(combination);
+			cout << combinations[0];
 		}
 	} while (next_permutation(current_permutation.begin(), current_permutation.end()));
-	return  combinations;
+	return  combinations;*/
+	return combinations;
+}
 
+void go(vector <int>& column_set, vector <int>& combination, vector <set<int>> &combmas, int offset, int k) {
+	if (k == 0) {
+		set<int> cur_comb(combination.begin(), combination.end());
+		combmas.push_back(cur_comb);
+		return;
+	}
+	for (int i = offset; i <= column_set.size() - k; ++i) {
+		combination.push_back(column_set[i]);
+		go(column_set, combination, combmas,i + 1, k - 1);
+		combination.pop_back();
+	}
 }

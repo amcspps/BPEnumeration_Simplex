@@ -9,10 +9,10 @@ void Task::boundary_point_enumeration() {
 	vector <double> obj_fun_values;
 	vector <vector<double>> boundary_points;
 	vector<set<int>> solution_variables_indices;
-	set<int> column_set;
+	vector<int> column_set;
 	generate_n(inserter(column_set, column_set.end()), _A.cols, [n = 0]() mutable { return n++; });
 	vector<set<int>> combinations = generate_combinations(column_set, _A.rows);
-	
+
 	for (auto combination : combinations) {
 		Matrix submatrix = Matrix(_A, combination);
 		auto sol = solve(submatrix, _B);

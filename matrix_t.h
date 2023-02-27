@@ -48,7 +48,7 @@ struct Matrix {
     size_t size() { return _data.size(); }
 
     void deleteEl(int _j);
-    void addData(int data, int i, int j);
+    void addData(int data, int i, int j =0);
 protected:
     std::vector<double> _data;
     auto colSpan(int index) const;

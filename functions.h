@@ -54,4 +54,4 @@ std::vector <double> solve(Matrix A, vector_t B);
 double determinant_upper_triangle(Matrix A);
 std::vector<std::set<int>> generate_combinations(std::vector<int> column_set, int k);
 double evaluate(vector_t obj_function, std::vector<double> solution, std::set<int> variable_indices);
-
+void go(std::vector <int>& column_set, std::vector <int>& combination, std::vector <std::set<int>>& combmas, int offset, int k);
