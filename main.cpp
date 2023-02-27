@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
-#include "matrix_t.h"
+
 #include "Taskloader.h"
 #include "vector_t.h"
 #include "task.h" 
@@ -18,13 +18,13 @@ int main()
 	task_t canon = mom.makeCanon(task, cond, ineq);
 	Task ct = Task(canon.A, canon.b, canon.F);
 
-	//ct.boundary_point_enumeration();
-	mom.forSimplecs(canon);
+	ct.boundary_point_enumeration(CANONIC);
+	//mom.forSimplecs(canon);
 
 	std::cout << "dual: -----------------------------------------------------" << std::endl;
 	task_t dual = mom.makeDual(task, cond, ineq);
 	Task dt = Task(dual.A, dual.b, dual.F);
-	dt.boundary_point_enumeration();
-	mom.forSimplecs(dual);
+	dt.boundary_point_enumeration(DUAL);
+	//mom.forSimplecs(dual);
 	return 0;
 }
