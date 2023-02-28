@@ -17,6 +17,8 @@ int main()
 	std::cout << "canon: -----------------------------------------------------" << endl;
 	task_t canon = mom.makeCanon(task, cond, ineq);
 	Task ct = Task(canon.A, canon.b, canon.F);
+	cout << canon.b << endl;
+	cout << canon.F << endl;
 
 	ct.boundary_point_enumeration(CANONIC);
 	//mom.forSimplecs(canon);

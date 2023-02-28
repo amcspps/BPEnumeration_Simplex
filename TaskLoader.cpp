@@ -166,6 +166,9 @@ task_t TaskLoader::makeDual(task_t M, std::vector<int> conditions, std::vector<i
             A(i, j) = A(i, j) * (-1);
         b[i] = b[i] * (-1);
     }
+    std::cout << A << std::endl;
+    std::cout << b << std::endl;
+    std::cout << F << std::endl;
 
 
     return makeCanon({ A,b,F }, inequality, conditions);
