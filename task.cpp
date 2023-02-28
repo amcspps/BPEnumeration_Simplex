@@ -28,12 +28,12 @@ void Task::boundary_point_enumeration(int task_type) {
 	if (task_type == CANONIC) {
 		auto val = *(max_element(obj_fun_values.begin(), obj_fun_values.end()));
 		auto index = find_index(obj_fun_values, val);
-		cout << "the max of objective function is: " << val << "\t" << "variables are:" << solution_variables_indices[index] << "=" << boundary_points[index] << ", other x_i = 0" << endl;
+		cout << "the max of objective function is: " << val << "\t\n" << "variables are:" << solution_variables_indices[index] << "=" << boundary_points[index] << ", other x_i = 0" << endl;
 	}
 	else {
 		auto val = *(min_element(obj_fun_values.begin(), obj_fun_values.end()));
 		auto index = find_index(obj_fun_values, val);
-		cout << "the min of objective function is: " << val << "\t" << "variables are:" << solution_variables_indices[index] << "=" << boundary_points[index] << ", other x_i = 0" << endl;
+		cout << "the min of objective function is: " << val << "\t\n" << "variables are:" << solution_variables_indices[index] << "=" << boundary_points[index] << ", other x_i = 0" << endl;
 	}
 	
 };

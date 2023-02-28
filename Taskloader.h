@@ -20,6 +20,6 @@ public:
     std::tuple<task_t, std::vector<int>, std::vector<int>> load(std::string filename);
     task_t makeCanon(task_t M, std::vector<int> conditions, std::vector<int> inequality);
     task_t makeDual(task_t M, std::vector<int> conditions, std::vector<int> inequality);
-    static void printTask(task_t M);
+    static void printTask(task_t M, std::vector<int> ineq);
     std::vector<std::vector<double>> forSimplecs(task_t M);
 };

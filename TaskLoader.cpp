@@ -166,27 +166,37 @@ task_t TaskLoader::makeDual(task_t M, std::vector<int> conditions, std::vector<i
             A(i, j) = A(i, j) * (-1);
         b[i] = b[i] * (-1);
     }
-    std::cout << A << std::endl;
-    std::cout << b << std::endl;
-    std::cout << F << std::endl;
 
+    printTask({ A,b,F }, conditions);
 
     return makeCanon({ A,b,F }, inequality, conditions);
 }
 
-void TaskLoader::printTask(task_t M) {
-    std::cout << std::endl;
+void TaskLoader::printTask(task_t M, std::vector<int> ineq) {
+    //std::vector<double> ineq{ 3,4,5 };
+    std::vector<int> dop;
+    for (int i = 0; i < M.A.rows; i++) {
+        if (std::find(ineq.begin(), ineq.end(), i) == ineq.end())
+            dop.push_back(1);
+        else
+            dop.push_back(0);
+    }
     for (int i = 0; i < M.A.rows; i++) {
         for (int j = 0; j < M.A.cols; j++) {
             std::cout << std::setw(2) << M.A.el(i, j) << " ";
         }
-        std::cout << "= ";
+        if(dop[i] ==1)
+            std::cout << "= ";
+        else
+            std::cout << "<= ";
         std::cout << std::setw(2) << M.b.el(i, 0) << std::endl;
     }
+    std::cout << std::endl;
+    std::cout << "C: ";
     for (int i = 0; i < M.A.cols; i++) {
         std::cout << std::setw(2) << M.F.el(i, 0) << " ";
     }
-    std::cout << std::endl;
+    std::cout << "\n \n" << std::endl;
 
 }
 
@@ -206,11 +216,11 @@ std::vector<std::vector<double>> TaskLoader::forSimplecs(task_t M) {
     S[M.A.rows][0] = 0;
 
     for (int i = 0; i < M.A.cols; i++)
-        S[M.A.rows][i + 1] = -M.F.el(i, 0);
+        S[M.A.rows][i + 1] = M.F.el(i, 0);
 
     for (int i = 0; i < S.size(); i++) {
         for (int j = 0; j < S[i].size(); j++)
-            std::cout << std::setw(3) << S[i][j];
+            std::cout << std::setw(3) << S[i][j]<< ',';
         std::cout << std::endl;
     }
     return S;
